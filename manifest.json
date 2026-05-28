@@ -27,6 +27,6 @@
   ],
   "name": "TelePrompter",
   "short_name": "TelePrompter",
-  "start_url": "./?utm_source=web_app_manifest",
+  "start_url": "./",
   "theme_color": "#4297d7"
 }

@@ -44,6 +44,10 @@ var TelePrompter = (function() {
   /* Custom App Settings */
   var config = Object.assign({}, defaultConfig);
 
+  /* Text sync state */
+  var lastTextUpdate = 0;
+  var pendingTextData = null;
+
   /**
    * ==================================================
    * TelePrompter Init Functions
@@ -141,6 +145,22 @@ var TelePrompter = (function() {
 
     // Track that we've started TelePrompter
     initialized = true;
+
+    // Load saved text from server (overrides localStorage)
+    var apiBase = (window.location.hostname === 'promptr.tv')
+      ? 'https://promptr.tv'
+      : 'http://' + window.location.hostname + ':3000';
+
+    // Load text from server on startup, then poll every 2s for changes
+    fetch(apiBase + '/api/text')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.updatedAt) lastTextUpdate = data.updatedAt;
+        applyTextData(data);
+      })
+      .catch(function() {});
+
+    startTextPolling(apiBase);
 
     if (debug) {
       console.log('[TP]', 'TelePrompter Initialized');
@@ -1106,6 +1126,7 @@ var TelePrompter = (function() {
             clearTimeout(emitTimeout);
             emitTimeout = setTimeout(function(){
               socket.emit('clientCommand', 'updateConfig', config);
+              socket.emit('clientCommand', 'updateText', $elm.teleprompter.html());
             }, timerExp);
           }
           break;
@@ -1114,6 +1135,7 @@ var TelePrompter = (function() {
           clearTimeout(emitTimeout);
           remoteUpdate(config, value);
           break;
+
       }
     });
   }
@@ -1268,6 +1290,11 @@ var TelePrompter = (function() {
 
     isPlaying = false;
 
+    // Apply any text update that arrived while playing
+    if (pendingTextData) {
+      applyTextData(pendingTextData);
+    }
+
     if (debug) {
       console.log('[TP]', 'Stopping TelePrompter');
     }
@@ -1410,6 +1437,58 @@ var TelePrompter = (function() {
     if (debug) {
       console.log('[TP]', 'URL Updated:', custom);
     }
+  }
+
+  /**
+   * Dedicated socket listener for text updates from admin
+   * Connects independently of remote pairing so text always stays in sync
+   * @param {String} serverBase Base URL of the socket server
+   */
+  /**
+   * Apply text data received from server
+   * @param {Object} data - { html, fontSize, updatedAt }
+   */
+  function applyTextData(data) {
+    if (!data) return;
+
+    if (typeof data.html === 'string' && data.html.length > 0) {
+      $elm.teleprompter.html(data.html);
+      localStorage.setItem('teleprompter_text', data.html);
+      $('p:empty', $elm.teleprompter).remove();
+    }
+
+    if (data.fontSize) {
+      config.fontSize = parseInt(data.fontSize);
+      localStorage.setItem('teleprompter_font_size', config.fontSize);
+      $elm.fontSize.slider('value', config.fontSize);
+      updateFontSize(true, true);
+    }
+
+    pendingTextData = null;
+  }
+
+  /**
+   * Poll server every 2 seconds for text changes
+   * Uses updatedAt timestamp to avoid unnecessary updates
+   * @param {String} apiBase - server base URL
+   */
+  function startTextPolling(apiBase) {
+    setInterval(function() {
+      fetch(apiBase + '/api/text')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.updatedAt || data.updatedAt <= lastTextUpdate) return;
+          lastTextUpdate = data.updatedAt;
+
+          if (isPlaying) {
+            // Queue for when teleprompter stops
+            pendingTextData = data;
+          } else {
+            applyTextData(data);
+          }
+        })
+        .catch(function() {});
+    }, 2000);
   }
 
   /* Expose Select Control to Public TelePrompter Object */

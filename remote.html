@@ -74,7 +74,41 @@
         <input type="range" min="0" max="50" value="50" class="slider" id="slider">
       </div>
 
+      <div class="text-editor-trigger">
+        <button class="button-text-toggle" id="button-text-toggle" type="button">&#9998; Editar Texto</button>
+      </div>
+
       <div class="footer text-center" id="remote-id"></div>
+    </div>
+
+    <!-- Full screen WYSIWYG editor overlay -->
+    <div id="text-overlay" style="display:none;">
+      <div class="editor-header">
+        <span>Editar Texto del Teleprompter</span>
+        <button id="editor-close" type="button">&#10005;</button>
+      </div>
+      <div class="editor-toolbar">
+        <div class="toolbar-group">
+          <label>Tama&ntilde;o:</label>
+          <select id="editor-fontsize">
+            <option value="24">Peque&ntilde;o (24px)</option>
+            <option value="36">Mediano (36px)</option>
+            <option value="48">Normal (48px)</option>
+            <option value="60" selected>Grande (60px)</option>
+            <option value="72">Muy grande (72px)</option>
+            <option value="96">Enorme (96px)</option>
+          </select>
+        </div>
+        <div class="toolbar-group">
+          <button id="editor-bold" type="button" title="Negrita"><b>B</b></button>
+          <button id="editor-italic" type="button" title="Cursiva"><i>I</i></button>
+        </div>
+      </div>
+      <div id="editor-content" contenteditable="true" spellcheck="true"></div>
+      <div class="editor-footer">
+        <button id="editor-cancel" type="button">Cancelar</button>
+        <button id="editor-send" type="button">Guardar y Enviar</button>
+      </div>
     </div>
 
     <script>

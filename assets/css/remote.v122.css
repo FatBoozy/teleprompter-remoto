@@ -150,7 +150,7 @@ body {
   max-width: 300px;
   width: 100%;
   position: fixed;
-  bottom: 75px;
+  bottom: 120px;
   margin: 0 auto;
   font-weight: 300;
   height: 55px;
@@ -199,4 +199,208 @@ body {
   background: #FFF;
   cursor: pointer;
   border-radius: 4px;
+}
+
+/* Edit Text Trigger Button */
+.text-editor-trigger {
+  position: fixed;
+  bottom: 72px;
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+}
+
+.button-text-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 6px;
+  padding: 7px 20px;
+  font-size: 13px;
+  font-family: 'Open Sans', sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.button-text-toggle:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Full Screen Editor Overlay ===== */
+
+#text-overlay {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #141414;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.editor-header span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+#editor-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+#editor-close:active {
+  color: #fff;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1a1a1a;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-group label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+#editor-fontsize {
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  padding: 5px 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+#editor-bold,
+#editor-italic {
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  padding: 0;
+}
+
+#editor-bold b {
+  font-size: 16px;
+}
+
+#editor-italic i {
+  font-size: 16px;
+  font-style: italic;
+}
+
+#editor-bold.active,
+#editor-italic.active {
+  background: #4297d7;
+  border-color: #4297d7;
+}
+
+#editor-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 22px;
+  line-height: 1.6;
+  color: #fff;
+  outline: none;
+  min-height: 0;
+  word-break: break-word;
+  -webkit-overflow-scrolling: touch;
+}
+
+#editor-content:empty::before {
+  content: 'Escribe aquí el texto del teleprompter...';
+  color: rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+  display: block;
+}
+
+.editor-footer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  background: #1a1a1a;
+  flex-shrink: 0;
+}
+
+#editor-cancel {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 7px;
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  padding: 12px 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+#editor-cancel:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#editor-send {
+  flex: 2;
+  background: #4297d7;
+  border: none;
+  border-radius: 7px;
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 0;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+#editor-send:active {
+  background: #2e7ab8;
 }

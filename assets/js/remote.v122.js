@@ -41,6 +41,13 @@
   /* Custom App Settings */
   var config = Object.assign({}, defaultConfig);
 
+  /* Server base URL */
+  function getServerBase() {
+    return (window.location.hostname === 'promptr.tv')
+      ? 'https://promptr.tv'
+      : 'http://' + window.location.hostname + ':3000';
+  }
+
   /**
    * ==================================================
    * TelePrompter Init Function
@@ -74,6 +81,17 @@
     $elm.sliderSelect = document.getElementById('slider-select');
     $elm.slower = document.getElementById('button-slower');
     $elm.up = document.getElementById('button-up');
+
+    /* Editor elements */
+    $elm.textToggle = document.getElementById('button-text-toggle');
+    $elm.textOverlay = document.getElementById('text-overlay');
+    $elm.editorContent = document.getElementById('editor-content');
+    $elm.editorFontsize = document.getElementById('editor-fontsize');
+    $elm.editorBold = document.getElementById('editor-bold');
+    $elm.editorItalic = document.getElementById('editor-italic');
+    $elm.editorClose = document.getElementById('editor-close');
+    $elm.editorCancel = document.getElementById('editor-cancel');
+    $elm.editorSend = document.getElementById('editor-send');
 
     document.addEventListener('focusout', function(e) {
       if (!socket && !remote) {
@@ -230,6 +248,119 @@
     $elm.up.addEventListener('touchend', notPressingDown, false);
     $elm.up.addEventListener('pressHold', handleUpPress, false);
     $elm.up.addEventListener('click', handleUpPress, false);
+
+    /* ===== Editor Overlay ===== */
+
+    /* Open editor */
+    $elm.textToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      openEditor();
+    });
+
+    /* Close editor */
+    $elm.editorClose.addEventListener('click', function(e) {
+      e.preventDefault();
+      closeEditor();
+    });
+
+    $elm.editorCancel.addEventListener('click', function(e) {
+      e.preventDefault();
+      closeEditor();
+    });
+
+    /* Bold */
+    $elm.editorBold.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      document.execCommand('bold', false, null);
+      $elm.editorContent.focus();
+      updateToolbarState();
+    });
+
+    /* Italic */
+    $elm.editorItalic.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      document.execCommand('italic', false, null);
+      $elm.editorContent.focus();
+      updateToolbarState();
+    });
+
+    /* Track cursor position for toolbar state */
+    $elm.editorContent.addEventListener('keyup', updateToolbarState);
+    $elm.editorContent.addEventListener('mouseup', updateToolbarState);
+    $elm.editorContent.addEventListener('touchend', updateToolbarState);
+
+    /* Save and send */
+    $elm.editorSend.addEventListener('click', function(e) {
+      e.preventDefault();
+      saveAndSendText();
+    });
+  }
+
+  /**
+   * Open the editor overlay and load current text from server
+   */
+  function openEditor() {
+    $elm.textOverlay.style.display = 'flex';
+
+    // Load current text from server
+    fetch(getServerBase() + '/api/text')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.html) {
+          $elm.editorContent.innerHTML = data.html;
+        }
+        if (data.fontSize) {
+          $elm.editorFontsize.value = String(data.fontSize);
+        }
+        $elm.editorContent.focus();
+      })
+      .catch(function() {
+        $elm.editorContent.focus();
+      });
+  }
+
+  /**
+   * Close the editor overlay
+   */
+  function closeEditor() {
+    $elm.textOverlay.style.display = 'none';
+  }
+
+  /**
+   * Save text to server and broadcast to teleprompter clients
+   */
+  function saveAndSendText() {
+    var html = $elm.editorContent.innerHTML;
+    var fontSize = parseInt($elm.editorFontsize.value) || 60;
+
+    fetch(getServerBase() + '/api/text', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html: html, fontSize: fontSize })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function() {
+      closeEditor();
+    })
+    .catch(function(err) {
+      console.error('[TP] Error saving text:', err);
+    });
+  }
+
+  /**
+   * Update Bold/Italic button active state based on cursor position
+   */
+  function updateToolbarState() {
+    if (document.queryCommandState('bold')) {
+      $elm.editorBold.classList.add('active');
+    } else {
+      $elm.editorBold.classList.remove('active');
+    }
+    if (document.queryCommandState('italic')) {
+      $elm.editorItalic.classList.add('active');
+    } else {
+      $elm.editorItalic.classList.remove('active');
+    }
   }
 
   /**
