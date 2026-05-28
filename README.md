@@ -1,7 +1,43 @@
+TelePrompter — Remote Text Edition
+===
+
+> Este repositorio está basado en el proyecto original de **Peter Schmalfeldt**:
+> **https://github.com/manifestinteractive/teleprompter**
+>
+> Todos los créditos del desarrollo original son de su autor. Este fork fue modificado con ayuda de **Claude AI (Anthropic)** para agregar la funcionalidad de edición de texto remota desde el servidor.
+
+---
+
+Modificaciones agregadas en este fork
+---
+
+- [X] Editor de texto WYSIWYG en el control remoto (negrita, cursiva, tamaño de letra)
+- [X] El texto se guarda en el servidor (`teleprompter_data.json`) y persiste entre sesiones
+- [X] El cliente (teleprompter) carga el texto desde el servidor al iniciar
+- [X] Sincronización automática: el cliente actualiza el texto cada 2 segundos
+- [X] Soporte PWA mejorado para esconder la barra de URL en celular
+
+Instalación con Docker
+---
+
+```bash
+git clone https://github.com/FatBoozy/teleprompter-remoto.git
+cd teleprompter-remoto
+docker-compose up -d
+```
+
+- `http://localhost:3000` → Control remoto y editor de texto
+- `http://localhost:8099` → Teleprompter (pantalla del presentador)
+
+---
+
+Créditos originales
+---
+
 Project Support
 ===
 
-If you or your company enjoy using this project, please consider supporting my work and joining my discord. 💖
+Si disfrutas del proyecto original, considera apoyar al creador:
 
 [![Become a GitHub Sponsor](https://img.shields.io/badge/Sponsor-171515.svg?logo=github&logoColor=white&style=for-the-badge "Become a GitHub Sponsor")](https://github.com/sponsors/manifestinteractive)
 [![Become a Patreon Sponsor](https://img.shields.io/badge/Sponsor-FF424D.svg?logo=patreon&logoColor=white&style=for-the-badge "Become a Patreon Sponsor")](https://patreon.com/peter_schmalfeldt)
